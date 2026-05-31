@@ -15,10 +15,12 @@ const certificationMeta: Record<
   BF: { label: "BF", className: "bg-ink text-white" },
   녹색: { label: "녹색", className: "bg-moss text-white" },
   에너지: { label: "에너지", className: "bg-clay text-white" },
-  제로: { label: "제로", className: "bg-sage text-ink" }
+  제로: { label: "제로", className: "bg-sage text-ink" },
+  "에효/제로": { label: "에효/제로", className: "bg-clay text-white" },
+  에절: { label: "에절", className: "bg-sage text-ink" }
 };
 
-const visibleRailItems = 4;
+const visibleRailItems = 5;
 
 export function FeaturedProjects() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -72,7 +74,8 @@ export function FeaturedProjects() {
                   </h3>
                 </div>
                 <span className="shrink-0 rounded bg-ink px-3 py-1.5 text-sm font-semibold text-white">
-                  {String(activeIndex + 1).padStart(2, "0")} / 12
+                  {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                  {featuredProjects.length}
                 </span>
               </div>
               <ProjectMeta project={activeProject} className="mt-6" />

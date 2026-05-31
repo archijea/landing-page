@@ -1,13 +1,10 @@
 import {
   ArrowRight,
-  BadgeCheck,
   ClipboardCheck,
   FileSearch,
-  Leaf,
   Mail,
+  MapPin,
   Phone,
-  ShieldCheck,
-  Zap
 } from "lucide-react";
 import { FeaturedProjects } from "@/components/featured-projects";
 import { ProjectTabs } from "@/components/project-tabs";
@@ -17,22 +14,22 @@ const services = [
   {
     title: "BF 인증",
     description: "장애물 없는 생활환경 인증 기준을 설계 단계부터 검토합니다.",
-    icon: ShieldCheck
+    logoSrc: "/images/BF_logo.png"
   },
   {
     title: "녹색건축 인증",
     description: "친환경 건축 성능과 평가 항목을 프로젝트 조건에 맞춰 관리합니다.",
-    icon: Leaf
+    logoSrc: "/images/green_logo.png"
   },
   {
     title: "에너지효율등급",
     description: "도서 검토와 보완 대응을 통해 에너지 성능 인증을 지원합니다.",
-    icon: Zap
+    logoSrc: "/images/energy_logo.png"
   },
   {
     title: "제로에너지건축물",
     description: "공공건축물의 제로에너지 인증 흐름을 통합적으로 설계합니다.",
-    icon: BadgeCheck
+    logoSrc: "/images/zero_logo.png"
   }
 ];
 
@@ -50,8 +47,12 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-line/80 bg-cloud/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
           <a href="#" className="flex items-center gap-3" aria-label="아키재 홈">
-            <span className="grid h-9 w-9 place-items-center rounded bg-ink text-sm font-semibold text-white">
-              AJ
+            <span className="grid h-10 w-10 place-items-center overflow-hidden rounded bg-white ring-1 ring-line">
+              <img
+                src="/images/archijea_logo.webp"
+                alt=""
+                className="h-full w-full object-cover object-top"
+              />
             </span>
             <span className="text-lg font-semibold tracking-normal">아키재</span>
           </a>
@@ -94,9 +95,8 @@ export default function Home() {
               친환경 건축 최고 파트너
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-ink/76">
-              아키재는 공공건축, 교육시설, 문화시설, 보건시설, 소방·경찰
-              청사 등 다양한 프로젝트에서 예비인증과 본인증 수행 경험을 쌓아온
-              건축 인증 컨설팅 파트너입니다.
+              ㈜아키재는 2013년부터 공공건축, 교육시설, 문화시설, 보건시설 및 청사 등 다양한 프로젝트에서 예비인증과 본인증 수행 경험을 쌓아온 건축물인증 컨설팅 전문기업입니다.
+              축적된 경험과 전문성을 바탕으로 고객 맞춤형 컨설팅을 제공하며, 빠르게 변화하는 제도와 기준을 정확히 반영하여 프로젝트 전 과정에 걸쳐 효율적이고 완성도 있는 인증 업무를 수행합니다.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
@@ -142,18 +142,21 @@ export default function Home() {
           </p> */}
         </div>
         <div className="grid grid-cols-1 gap-px overflow-hidden rounded border border-line bg-line md:grid-cols-2 lg:grid-cols-4">
-          {services.map((service) => {
-            const Icon = service.icon;
-            return (
-              <article key={service.title} className="bg-white p-6">
-                <Icon className="text-moss" size={28} aria-hidden="true" />
-                <h3 className="mt-6 text-xl font-semibold">{service.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-ink/66">
-                  {service.description}
-                </p>
-              </article>
-            );
-          })}
+          {services.map((service) => (
+            <article key={service.title} className="bg-white p-6">
+              <div className="flex h-14 items-center">
+                <img
+                  src={service.logoSrc}
+                  alt=""
+                  className="max-h-12 w-auto object-contain"
+                />
+              </div>
+              <h3 className="mt-6 text-xl font-semibold">{service.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-ink/66">
+                {service.description}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -168,10 +171,10 @@ export default function Home() {
                 프로젝트 수행 목록
               </h2>
             </div>
-            {/* <p className="max-w-xl text-base leadiㄹng-7 text-ink/68">
-              PDF 4페이지의 수행 실적을 예비인증, 예비+본인증, 본인증 단계별로
-              나누고 인증 범위는 배지로 빠르게 확인할 수 있게 구성했습니다.
-            </p> */}
+            <p className="max-w-xl text-base leading-7 text-ink/68">
+              엑셀 기준 수행 실적을 예비인증과 본인증 단계별로 나누고 인증
+              범위는 배지로 빠르게 확인할 수 있게 구성했습니다.
+            </p>
           </div>
 
           <ProjectTabs />
@@ -210,47 +213,74 @@ export default function Home() {
           <div>
             <p className="text-sm font-semibold text-sage">Contact</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-normal sm:text-4xl">
-              인증 검토가 필요한 프로젝트를 알려주세요
+              견적문의
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/68">
-              프로젝트명, 시설 용도, 필요한 인증 범위, 현재 설계 단계를
-              기준으로 초기 검토 방향을 정리할 수 있습니다.
+              프로젝트 정보와 문의사항을 남겨주시면 인증 검토 범위와 일정에
+              맞춰 상담을 진행합니다.
             </p>
-            <div className="mt-8 space-y-3 text-sm text-white/78">
+            <div className="mt-8 space-y-4 text-sm text-white/78">
+              <p className="text-base font-semibold text-white">
+                주식회사 아키재
+              </p>
+              <p className="flex items-start gap-3">
+                <MapPin className="mt-0.5 shrink-0" size={17} aria-hidden="true" />
+                광주광역시 남구 효천안길 51, 3층
+              </p>
               <p className="flex items-center gap-3">
                 <Phone size={17} aria-hidden="true" />
-                상담 연락처 입력 영역
+                TEL. 062-671-6701 / FAX. 062-671-2605
               </p>
               <p className="flex items-center gap-3">
                 <Mail size={17} aria-hidden="true" />
-                contact@archijea.co.kr
+                E-mail. archijea@naver.com
               </p>
             </div>
           </div>
 
           <form className="grid gap-4 rounded border border-white/14 bg-white/6 p-5">
+            <p className="text-lg font-semibold text-white">견적문의</p>
+            <label className="grid gap-2 text-sm font-medium">
+              담당자
+              <input
+                className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
+                placeholder="상호 / 담당자명"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium">
+              연락처
+              <input
+                className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
+                placeholder="연락처를 입력해 주세요."
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium">
+              이메일
+              <input
+                type="email"
+                className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
+                placeholder="이메일을 입력해 주세요."
+              />
+            </label>
             <label className="grid gap-2 text-sm font-medium">
               프로젝트명
               <input
                 className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
-                placeholder="예: 복합문화센터 신축공사"
+                placeholder="프로젝트명을 입력해 주세요."
               />
             </label>
             <label className="grid gap-2 text-sm font-medium">
-              필요한 인증
-              <select className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage">
-                <option>BF / 녹색 / 에너지 / 제로에너지</option>
-                <option>BF 인증</option>
-                <option>녹색건축 인증</option>
-                <option>에너지효율등급</option>
-                <option>제로에너지건축물</option>
-              </select>
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              문의 내용
+              문의사항
               <textarea
                 className="min-h-32 rounded border border-white/14 bg-white px-4 py-3 text-ink outline-none transition focus:border-sage"
-                placeholder="시설 용도, 설계 단계, 일정 등을 입력해 주세요."
+                placeholder="문의사항을 입력해 주세요."
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium">
+              첨부파일
+              <input
+                type="file"
+                className="rounded border border-white/14 bg-white px-4 py-3 text-sm text-ink file:mr-4 file:rounded file:border-0 file:bg-sage file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink"
               />
             </label>
             <button
@@ -258,7 +288,7 @@ export default function Home() {
               className="inline-flex h-12 items-center justify-center gap-2 rounded bg-sage px-5 text-sm font-semibold text-ink transition hover:bg-white"
             >
               <FileSearch size={17} aria-hidden="true" />
-              문의 내용 검토하기
+              견적문의 보내기
             </button>
           </form>
         </div>
