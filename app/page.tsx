@@ -13,32 +13,52 @@ import { projectStats } from "@/data/projects";
 const services = [
   {
     title: "BF 인증",
-    description: "장애물 없는 생활환경 인증 기준을 설계 단계부터 검토합니다.",
+    description: "장애물 없는 생활환경(BF) 최신 기준을 반영하여 설계 및 공사 초기 단계부터 인증 취득까지 전 과정을 지원합니다.",
     logoSrc: "/images/BF_logo.png"
   },
   {
-    title: "녹색건축 인증",
-    description: "친환경 건축 성능과 평가 항목을 프로젝트 조건에 맞춰 관리합니다.",
+    title: "녹색건축인증",
+    description: "친환경 건축 성능과 평가 항목을 종합적으로 분석하여 프로젝트 조건에 맞춘 인증 전략으로 인증 취득까지 체계적으로 지원합니다.",
     logoSrc: "/images/green_logo.png"
   },
   {
-    title: "에너지효율등급",
-    description: "도서 검토와 보완 대응을 통해 에너지 성능 인증을 지원합니다.",
+    title: "건축물에너지효율등급",
+    description: "정확한 도서 검토와 현장 조건에 대한 신속한 대응을 기반으로 에너지효율등급 인증 취득을 안정적으로 지원합니다.\n※ 2025년도부터 제로에너지건축물인증과 통합 운영",
     logoSrc: "/images/energy_logo.png"
   },
   {
     title: "제로에너지건축물",
-    description: "공공건축물의 제로에너지 인증 흐름을 통합적으로 설계합니다.",
+    description: "에너지 절감 계획과 설계 기준을 종합적으로 검토하여 제로에너지건축물 인증 취득 전 과정을 지원합니다.",
     logoSrc: "/images/zero_logo.png"
   }
 ];
 
+function ServiceDescription({ description }: { description: string }) {
+  return (
+    <>
+      {description.split("\n").map((line) => {
+        const isNote = line.startsWith("※");
+
+        return (
+          <span
+            key={line}
+            className={isNote ? "mt-1 block text-xs leading-5" : "block"}
+          >
+            {line}
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
 const process = [
-  "사전 검토",
+  "사전검토",
   "인증 전략 수립",
-  "도서·자료 검토",
-  "신청 및 보완 대응",
-  "인증 완료"
+  "도서. 자료 검토",
+  "인증 신청도서 작성",
+  "인증 신청 및 보완 대응",
+  "인증완료"
 ];
 
 export default function Home() {
@@ -96,6 +116,7 @@ export default function Home() {
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-ink/76">
               ㈜아키재는 2013년부터 공공건축, 교육시설, 문화시설, 보건시설 및 청사 등 다양한 프로젝트에서 예비인증과 본인증 수행 경험을 쌓아온 건축물인증 컨설팅 전문기업입니다.
+              <br />
               축적된 경험과 전문성을 바탕으로 고객 맞춤형 컨설팅을 제공하며, 빠르게 변화하는 제도와 기준을 정확히 반영하여 프로젝트 전 과정에 걸쳐 효율적이고 완성도 있는 인증 업무를 수행합니다.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -153,7 +174,7 @@ export default function Home() {
               </div>
               <h3 className="mt-6 text-xl font-semibold">{service.title}</h3>
               <p className="mt-3 text-sm leading-6 text-ink/66">
-                {service.description}
+                <ServiceDescription description={service.description} />
               </p>
             </article>
           ))}
@@ -172,8 +193,7 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-xl text-base leading-7 text-ink/68">
-              엑셀 기준 수행 실적을 예비인증과 본인증 단계별로 나누고 인증
-              범위는 배지로 빠르게 확인할 수 있게 구성했습니다.
+              
             </p>
           </div>
 
@@ -193,7 +213,7 @@ export default function Home() {
               있도록 프로젝트별 인증 체크포인트를 관리합니다.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-px overflow-hidden rounded border border-line bg-line md:grid-cols-5">
+          <div className="grid grid-cols-1 gap-px overflow-hidden rounded border border-line bg-line md:grid-cols-6">
             {process.map((item, index) => (
               <div key={item} className="bg-white p-5">
                 <p className="text-sm font-semibold text-clay">
@@ -216,8 +236,7 @@ export default function Home() {
               견적문의
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/68">
-              프로젝트 정보와 문의사항을 남겨주시면 인증 검토 범위와 일정에
-              맞춰 상담을 진행합니다.
+              프로젝트 정보와 문의사항을 남겨주시면 담당자가 회신드리겠습니다.
             </p>
             <div className="mt-8 space-y-4 text-sm text-white/78">
               <p className="text-base font-semibold text-white">

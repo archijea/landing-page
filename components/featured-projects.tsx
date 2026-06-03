@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Building2, MapPin } from "lucide-react";
+import { ArrowDown, ArrowUp, Building2 } from "lucide-react";
 import {
   featuredProjects,
   type FeaturedProject
@@ -67,7 +67,7 @@ export function FeaturedProjects() {
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                 <div>
                   <p className="text-sm font-semibold text-moss">
-                    {activeProject.category}
+                    {activeProject.phase}
                   </p>
                   <h3 className="mt-3 text-2xl font-semibold leading-8 sm:text-3xl">
                     {activeProject.name}
@@ -155,7 +155,7 @@ function ProjectImage({
       style={
         project.image
           ? {
-              backgroundImage: `url(${project.image})`,
+              backgroundImage: `url("${project.image}")`,
               backgroundPosition: "center",
               backgroundSize: "cover"
             }
@@ -180,10 +180,6 @@ function ProjectMeta({
 }) {
   return (
     <div className={className}>
-      <p className="mb-3 flex items-center gap-2 text-sm font-medium text-ink/60">
-        <MapPin size={15} aria-hidden="true" />
-        {project.location}
-      </p>
       <div className="flex flex-wrap gap-2">
         {project.certifications.map((certification) => (
           <span
