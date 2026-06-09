@@ -1,11 +1,11 @@
 import {
   ArrowRight,
   ClipboardCheck,
-  FileSearch,
   Mail,
   MapPin,
   Phone,
 } from "lucide-react";
+import { ContactForm } from "@/components/contact-form";
 import { FeaturedProjects } from "@/components/featured-projects";
 import { ProjectTabs } from "@/components/project-tabs";
 import { projectStats } from "@/data/projects";
@@ -71,7 +71,7 @@ export default function Home() {
               <img
                 src="/images/archijea_logo.webp"
                 alt=""
-                className="h-full w-full object-cover object-top"
+                className="h-full w-full object-contain p-1"
               />
             </span>
             <span className="text-lg font-semibold tracking-normal">아키재</span>
@@ -257,59 +257,7 @@ export default function Home() {
             </div>
           </div>
 
-          <form className="grid gap-4 rounded border border-white/14 bg-white/6 p-5">
-            <p className="text-lg font-semibold text-white">견적문의</p>
-            <label className="grid gap-2 text-sm font-medium">
-              담당자
-              <input
-                className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
-                placeholder="상호 / 담당자명"
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              연락처
-              <input
-                className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
-                placeholder="연락처를 입력해 주세요."
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              이메일
-              <input
-                type="email"
-                className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
-                placeholder="이메일을 입력해 주세요."
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              프로젝트명
-              <input
-                className="h-12 rounded border border-white/14 bg-white px-4 text-ink outline-none transition focus:border-sage"
-                placeholder="프로젝트명을 입력해 주세요."
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              문의사항
-              <textarea
-                className="min-h-32 rounded border border-white/14 bg-white px-4 py-3 text-ink outline-none transition focus:border-sage"
-                placeholder="문의사항을 입력해 주세요."
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              첨부파일
-              <input
-                type="file"
-                className="rounded border border-white/14 bg-white px-4 py-3 text-sm text-ink file:mr-4 file:rounded file:border-0 file:bg-sage file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink"
-              />
-            </label>
-            <button
-              type="button"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded bg-sage px-5 text-sm font-semibold text-ink transition hover:bg-white"
-            >
-              <FileSearch size={17} aria-hidden="true" />
-              견적문의 보내기
-            </button>
-          </form>
+          <ContactForm />
         </div>
       </section>
     </main>
