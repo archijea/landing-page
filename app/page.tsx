@@ -67,11 +67,11 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-line/80 bg-cloud/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
           <a href="#" className="flex items-center gap-3" aria-label="아키재 홈">
-            <span className="grid h-10 w-10 place-items-center overflow-hidden rounded bg-white ring-1 ring-line">
+            <span className="grid h-12 w-12 place-items-center">
               <img
                 src="/images/archijea_logo.webp"
                 alt=""
-                className="h-full w-full object-contain p-1"
+                className="h-10 w-auto object-contain"
               />
             </span>
             <span className="text-lg font-semibold tracking-normal">아키재</span>
