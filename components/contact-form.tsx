@@ -12,6 +12,7 @@ const maxFileSizeMb = 10;
 
 export function ContactForm() {
   const formRef = useRef<HTMLFormElement>(null);
+  const formLoadedAtRef = useRef(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<SubmitState>({
     type: "idle",
@@ -76,6 +77,12 @@ export function ContactForm() {
         홈페이지
         <input name="website" tabIndex={-1} autoComplete="off" />
       </label>
+      <input
+        type="hidden"
+        name="formLoadedAt"
+        value={formLoadedAtRef.current}
+        readOnly
+      />
       <label className="grid min-w-0 gap-2 text-sm font-medium">
         담당자
         <input

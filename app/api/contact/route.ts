@@ -49,6 +49,39 @@ type RateLimitEntry = {
 const rateLimitStore = new Map<string, RateLimitEntry>();
 const rateLimitWindowMs = 10 * 60 * 1000;
 const rateLimitMaxRequests = 5;
+const minimumSubmitTimeMs = 3000;
+const maxFieldLengths = {
+  name: 80,
+  phone: 30,
+  email: 120,
+  project: 120,
+  message: 3000
+};
+
+const solicitationPatterns = [
+  "디지털 마케팅",
+  "온라인 마케팅",
+  "검색엔진",
+  "검색 엔진",
+  "seo",
+  "backlink",
+  "guest post",
+  "lead generation",
+  "website traffic",
+  "rank higher",
+  "google ranking",
+  "more customers",
+  "grow your business",
+  "business proposal"
+];
+
+const salesPitchPatterns = [
+  "더 많은 고객에게 도달",
+  "귀사의 전문성을 온라인에서",
+  "온라인에서 더욱 널리 알릴",
+  "마케팅을 강화",
+  "마케팅을 도와드릴"
+];
 
 function getText(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -69,6 +102,12 @@ function isEmail(value: string) {
 }
 
 function getClientIp(request: Request) {
+  const cloudflareIp = request.headers.get("cf-connecting-ip");
+  if (cloudflareIp) return cloudflareIp.trim();
+
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
+
   const forwarded = request.headers.get("x-forwarded-for");
   return forwarded?.split(",")[0]?.trim() || "unknown";
 }
@@ -113,6 +152,97 @@ function validateAttachment(file: File) {
   }
 
   return null;
+}
+
+function validateFieldLengths(payload: ContactPayload) {
+  if (payload.name.length > maxFieldLengths.name) {
+    return "담당자는 80자 이하로 입력해 주세요.";
+  }
+
+  if (payload.phone.length > maxFieldLengths.phone) {
+    return "연락처는 30자 이하로 입력해 주세요.";
+  }
+
+  if (payload.email.length > maxFieldLengths.email) {
+    return "이메일은 120자 이하로 입력해 주세요.";
+  }
+
+  if (payload.project.length > maxFieldLengths.project) {
+    return "프로젝트명은 120자 이하로 입력해 주세요.";
+  }
+
+  if (payload.message.length > maxFieldLengths.message) {
+    return "문의사항은 3000자 이하로 입력해 주세요.";
+  }
+
+  return null;
+}
+
+function normalizeForSpamCheck(value: string) {
+  return value.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function getSubmitElapsedMs(formData: FormData) {
+  const loadedAt = Number(getText(formData, "formLoadedAt"));
+  return Number.isFinite(loadedAt) ? Date.now() - loadedAt : null;
+}
+
+function getSpamReasons(payload: ContactPayload, formData: FormData) {
+  const reasons: string[] = [];
+  const text = normalizeForSpamCheck(
+    `${payload.name} ${payload.email} ${payload.project} ${payload.message}`
+  );
+  const compactText = text.replace(/\s/g, "");
+  const normalizedPhone = payload.phone.replace(/\D/g, "");
+  const elapsedMs = getSubmitElapsedMs(formData);
+
+  const solicitationHits = solicitationPatterns.filter((pattern) =>
+    text.includes(pattern)
+  );
+  if (solicitationHits.length > 0) {
+    reasons.push("solicitation-copy");
+  }
+
+  const salesPitchHits = salesPitchPatterns.filter((pattern) =>
+    compactText.includes(pattern.replace(/\s/g, ""))
+  );
+  if (salesPitchHits.length >= 2) {
+    reasons.push("sales-pitch-copy");
+  }
+
+  if (/^555\d{7}$/.test(normalizedPhone)) {
+    reasons.push("fictional-us-phone");
+  }
+
+  if (/^(\d)\1{7,}$/.test(normalizedPhone)) {
+    reasons.push("repeated-phone-digits");
+  }
+
+  if (
+    payload.name.length >= 3 &&
+    normalizeForSpamCheck(payload.name) === normalizeForSpamCheck(payload.project)
+  ) {
+    reasons.push("same-name-and-project");
+  }
+
+  if (elapsedMs !== null && elapsedMs >= 0 && elapsedMs < minimumSubmitTimeMs) {
+    reasons.push("too-fast-submit");
+  }
+
+  return reasons;
+}
+
+function isLikelySpam(payload: ContactPayload, formData: FormData) {
+  const reasons = getSpamReasons(payload, formData);
+  const score = reasons.reduce((total, reason) => {
+    if (reason === "solicitation-copy") return total + 3;
+    if (reason === "sales-pitch-copy") return total + 2;
+    if (reason === "fictional-us-phone") return total + 2;
+    if (reason === "repeated-phone-digits") return total + 2;
+    return total + 1;
+  }, 0);
+
+  return { isSpam: score >= 4, reasons, score };
 }
 
 function buildEmailHtml(payload: ContactPayload) {
@@ -235,6 +365,22 @@ export async function POST(request: Request) {
       { message: "올바른 이메일을 입력해 주세요." },
       { status: 400 }
     );
+  }
+
+  const lengthError = validateFieldLengths(payload);
+  if (lengthError) {
+    return NextResponse.json({ message: lengthError }, { status: 400 });
+  }
+
+  const spamCheck = isLikelySpam(payload, formData);
+  if (spamCheck.isSpam) {
+    console.info("[contact:spam-drop]", {
+      ip,
+      reasons: spamCheck.reasons,
+      score: spamCheck.score,
+      email: payload.email
+    });
+    return NextResponse.json({ message: "문의가 접수되었습니다." });
   }
 
   const attachmentValue = formData.get("attachment");
