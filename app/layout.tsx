@@ -2,13 +2,22 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "아키재 | 건축 인증 컨설팅",
+  metadataBase: new URL("https://archijea.com"),
+  title: {
+    default: "아키재 | 건축 인증 컨설팅",
+    template: "%s | 아키재"
+  },
   description:
     "BF 인증, 녹색건축 인증, 에너지효율등급, 제로에너지건축물 인증 수행 경험을 기반으로 한 건축 인증 컨설팅.",
+  alternates: {
+    canonical: "/"
+  },
   openGraph: {
     title: "아키재 | 건축 인증 컨설팅",
     description:
       "BF 인증, 녹색건축 인증, 에너지효율등급, 제로에너지건축물 인증 컨설팅.",
+    url: "/",
+    siteName: "아키재",
     images: [
       {
         url: "/images/og-image.png",
