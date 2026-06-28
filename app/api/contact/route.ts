@@ -50,6 +50,8 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 const rateLimitWindowMs = 10 * 60 * 1000;
 const rateLimitMaxRequests = 5;
 const minimumSubmitTimeMs = 3000;
+const spamSuspectThreshold = 3;
+const spamBlockThreshold = 4;
 const maxFieldLengths = {
   name: 80,
   phone: 30,
@@ -182,9 +184,39 @@ function normalizeForSpamCheck(value: string) {
   return value.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
+function normalizeToken(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9가-힣]/g, "");
+}
+
+function getEmailLocalPart(email: string) {
+  return email.split("@")[0] || "";
+}
+
 function getSubmitElapsedMs(formData: FormData) {
   const loadedAt = Number(getText(formData, "formLoadedAt"));
   return Number.isFinite(loadedAt) ? Date.now() - loadedAt : null;
+}
+
+function isMostlyEnglish(value: string) {
+  const letters = value.match(/[a-zA-Z가-힣]/g) || [];
+  if (letters.length < 20) return false;
+
+  const korean = value.match(/[가-힣]/g) || [];
+  const latin = value.match(/[a-zA-Z]/g) || [];
+
+  return korean.length === 0 && latin.length / letters.length > 0.85;
+}
+
+function hasRepeatedIdentityFields(payload: ContactPayload) {
+  const name = normalizeToken(payload.name);
+  const project = normalizeToken(payload.project);
+  const emailLocalPart = normalizeToken(getEmailLocalPart(payload.email));
+
+  if (!name || name.length < 3 || !project || !emailLocalPart) {
+    return false;
+  }
+
+  return name === project && (emailLocalPart === name || emailLocalPart === project);
 }
 
 function getSpamReasons(payload: ContactPayload, formData: FormData) {
@@ -225,6 +257,14 @@ function getSpamReasons(payload: ContactPayload, formData: FormData) {
     reasons.push("same-name-and-project");
   }
 
+  if (isMostlyEnglish(payload.message)) {
+    reasons.push("english-only-message");
+  }
+
+  if (hasRepeatedIdentityFields(payload)) {
+    reasons.push("repeated-identity-fields");
+  }
+
   if (elapsedMs !== null && elapsedMs >= 0 && elapsedMs < minimumSubmitTimeMs) {
     reasons.push("too-fast-submit");
   }
@@ -242,7 +282,12 @@ function isLikelySpam(payload: ContactPayload, formData: FormData) {
     return total + 1;
   }, 0);
 
-  return { isSpam: score >= 4, reasons, score };
+  return {
+    isSpam: score >= spamBlockThreshold,
+    isSuspect: score >= spamSuspectThreshold,
+    reasons,
+    score
+  };
 }
 
 function buildEmailHtml(payload: ContactPayload) {
@@ -381,6 +426,15 @@ export async function POST(request: Request) {
       email: payload.email
     });
     return NextResponse.json({ message: "문의가 접수되었습니다." });
+  }
+
+  if (spamCheck.isSuspect) {
+    console.info("[contact:spam-suspect]", {
+      ip,
+      reasons: spamCheck.reasons,
+      score: spamCheck.score,
+      email: payload.email
+    });
   }
 
   const attachmentValue = formData.get("attachment");
